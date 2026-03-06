@@ -8,15 +8,23 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/api
+RUN go build -o api ./cmd/api
+
 
 # ---- Runtime stage ----
-FROM alpine:latest
+FROM debian:bookworm-slim
 
 WORKDIR /app
 
-COPY --from=builder /app/server .
+# install migrate
+RUN apt-get update && apt-get install -y curl \
+    && curl -L https://github.com/golang-migrate/migrate/releases/latest/download/migrate.linux-amd64.tar.gz \
+    | tar xvz \
+    && mv migrate /usr/local/bin/migrate
+
+COPY --from=builder /app/api .
+COPY migrations ./migrations
 
 EXPOSE 8080
 
-CMD ["./server"]
+CMD ["./api"]
