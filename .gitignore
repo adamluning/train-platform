@@ -1,0 +1,19 @@
+# binaries
+bin/
+*.exe
+
+# Go build
+*.out
+
+# env files
+.env
+
+# Docker
+docker-data/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/

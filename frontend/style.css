@@ -1,0 +1,276 @@
+/* ===== Global Theme ===== */
+:root{
+  --bg:#0f172a;
+  --bg2:#0b1220;
+  --panel:#111827;
+  --card:#1f2933;
+  --button:#022c22;
+  --accent:#22c55e;
+  --accent-soft:#4ade80;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --border:#2a3441;
+  --top:#020617;
+  --logout:#e98484;
+  --note:#c7f9cc;
+  --volume:#86efac;
+  padding-top: 20px;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background:linear-gradient(180deg,var(--bg2),var(--bg));
+  color:var(--text);
+}
+
+h1{
+  text-align:center;
+  margin:20px 0 10px 0;
+  font-size:28px;
+  letter-spacing:1px;
+}
+
+h2,h3{margin:0 0 10px 0;}
+
+/* ===== Layout Grid ===== */
+#topbar{
+  position: sticky;
+  top: 0;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 12px 24px;
+
+  background: var(--top);
+  border-bottom: 1px solid var(--border);
+
+  z-index: 1000;
+}
+
+#logo{
+  font-weight: bold;
+  font-size: 30px;
+}
+
+#topbar-actions button{
+  background: var(--logout);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+#auth-panel, #register-panel{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background: var(--bg);
+    padding: 40px;
+    border-radius: 14px;
+    width: 320px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+#app{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  padding:16px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  margin-top:10px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+.panel h2{
+  margin-bottom:12px;
+  border-bottom:1px solid var(--border);
+  padding-bottom:6px;
+}
+
+/* ===== Inputs ===== */
+#auth-panel input,
+#register-panel input{
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--top);
+    color: white;
+    margin-bottom:5px;
+}
+
+#auth-panel button,
+#register-panel button{
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    background: var(--accent);
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+input, button{
+  background:var(--bg2);
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 10px;
+}
+
+input::placeholder{color:var(--muted);}
+
+button{
+  cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent-soft));
+  color:var(--button);
+  font-weight:600;
+  border:none;
+  transition:.2s;
+}
+
+button:hover{transform:translateY(-1px);filter:brightness(1.05);}
+
+/* ===== Calendar ===== */
+#calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:8px;
+}
+
+.day{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  min-height:90px;
+  padding:6px;
+  cursor:pointer;
+  position:relative;
+  transition:.2s;
+}
+
+.day:hover{transform:translateY(-2px);border-color:var(--accent-soft);}
+
+.day-number{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.session-dot{
+  width:8px;
+  height:8px;
+  background:var(--accent);
+  border-radius:50%;
+  margin-top:4px;
+}
+
+
+/* ===== Sessions ===== */
+.session-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:10px;
+  overflow:hidden;
+}
+
+.session-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:600;
+}
+
+.session-title{font-size:15px;}
+
+.session-desc{
+  margin-top:6px;
+  color:var(--muted);
+}
+
+.session-notes{
+  margin-top:6px;
+  font-style:italic;
+  color:var(--note);
+}
+
+.session-volume{
+  margin-left:8px;
+  font-size:13px;
+  color:var(--volume);
+}
+
+.session-actions{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+/* ===== Goals ===== */
+.goal-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px;
+  margin-bottom:6px;
+  display:flex;
+  justify-content:space-between;
+}
+
+/* ===== PBs ===== */
+.pb-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px;
+  margin-top:6px;
+  display:flex;
+  justify-content:space-between;
+}
+
+/* ===== Stats ===== */
+#stats canvas{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin-top:10px;
+}
+
+#yearly-panel canvas{
+  width:100%;
+  max-width:100%;
+  height:350px;
+}
+
+/* ===== Headers ===== */
+#calendar-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+#month-label{font-weight:600;}
