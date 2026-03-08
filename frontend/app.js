@@ -74,7 +74,7 @@ async function login() {
     const email = document.getElementById("auth-email").value
     const password = document.getElementById("auth-password").value
 
-    const res = await fetch("http://localhost:8080/auth/login", {
+    const res = await fetch("http://89.167.116.54/auth/login", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({ email, password })
@@ -106,7 +106,7 @@ async function register() {
         return
     }
 
-    const res = await fetch("http://localhost:8080/auth/register", {
+    const res = await fetch("http://89.167.116.54/auth/register", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({ email, password })
@@ -136,7 +136,7 @@ function showLogin(){
 async function loadCalendar() {
     console.log("loadCalendar() called")
 
-    const res = await authFetch(`http://localhost:8080/calendar?year=${currentYear}&month=${currentMonth}`)
+    const res = await authFetch(`http://89.167.116.54/calendar?year=${currentYear}&month=${currentMonth}`)
     calendarData = await res.json()
 
     document.getElementById("month-label").innerText =
@@ -234,7 +234,7 @@ async function addSession() {
         date = now.toISOString().split("T")[0]
     }
 
-    await authFetch("http://localhost:8080/sessions", {
+    await authFetch("http://89.167.116.54/sessions", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
@@ -275,7 +275,7 @@ async function submitVolume(id) {
     const duration = parseInt(document.getElementById(`dur-${id}`).value || 0)
 
 
-    await authFetch(`http://localhost:8080/sessions/${id}/complete`, {
+    await authFetch(`http://89.167.116.54/sessions/${id}/complete`, {
         method: "PUT",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
@@ -291,7 +291,7 @@ async function submitVolume(id) {
 async function addNote(id) {
     const note = document.getElementById(`note-${id}`).value
 
-    await authFetch(`http://localhost:8080/sessions/${id}/note`, {
+    await authFetch(`http://89.167.116.54/sessions/${id}/note`, {
         method: "PUT",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
@@ -306,7 +306,7 @@ async function addNote(id) {
 }
 
 async function delete_s(id) {
-    await authFetch(`http://localhost:8080/sessions/${id}/delete`, {
+    await authFetch(`http://89.167.116.54/sessions/${id}/delete`, {
         method: "DELETE"
     })
 
@@ -319,7 +319,7 @@ async function loadGoals() {
     const now = new Date()
     const year = now.getFullYear()
 
-    const res = await authFetch(`http://localhost:8080/goals?year=${year}`)
+    const res = await authFetch(`http://89.167.116.54/goals?year=${year}`)
     const goals = await res.json()
 
     const container = document.getElementById("goals-list")
@@ -346,7 +346,7 @@ async function addGoal() {
         date = `${year}-12-31`
     }
 
-    await authFetch("http://localhost:8080/goals", {
+    await authFetch("http://89.167.116.54/goals", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
@@ -364,7 +364,7 @@ async function addGoal() {
 }
 
 async function delete_g(id) {
-    await authFetch(`http://localhost:8080/goals/${id}/delete`, {
+    await authFetch(`http://89.167.116.54/goals/${id}/delete`, {
         method: "DELETE"
     })
     loadGoals()
@@ -376,7 +376,7 @@ async function loadStats(){
 }
 
 async function statsMonth() {
-    const res = await authFetch(`http://localhost:8080/stats/month?year=${currentYear}&month=${currentMonth}`)
+    const res = await authFetch(`http://89.167.116.54/stats/month?year=${currentYear}&month=${currentMonth}`)
     const data = await res.json()
     console.log("stats data:", data)
 
@@ -445,7 +445,7 @@ async function statsYear() {
 
     for(let i=0;i<selectedYears.length;i++){
         const year = selectedYears[i]
-        const res = await authFetch(`http://localhost:8080/stats/year?year=${year}`)
+        const res = await authFetch(`http://89.167.116.54/stats/year?year=${year}`)
         const data = await res.json()
         allData.push({year,data,color:colors[i%colors.length]})
     }
@@ -566,7 +566,7 @@ async function addMonthlyVolume() {
         return
     }
 
-    await authFetch("http://localhost:8080/stats/manual", {
+    await authFetch("http://89.167.116.54/stats/manual", {
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
@@ -588,7 +588,7 @@ async function addMonthlyVolume() {
 async function loadPBs() {
     console.log("loadPBs() called")
 
-    const res = await authFetch(`http://localhost:8080/pbs`)
+    const res = await authFetch(`http://89.167.116.54/pbs`)
     const pbs = await res.json()
 
     const container = document.getElementById("pb-list")
@@ -620,7 +620,7 @@ async function addPB() {
         time = time + ":00"
     }
 
-    await authFetch("http://localhost:8080/pbs", {
+    await authFetch("http://89.167.116.54/pbs", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
@@ -636,7 +636,7 @@ async function addPB() {
 }
 
 async function delete_pb(id) {
-    await authFetch(`http://localhost:8080/pbs/${id}/delete`, {
+    await authFetch(`http://89.167.116.54/pbs/${id}/delete`, {
         method: "DELETE"
     })
     loadPBs()
