@@ -641,7 +641,3 @@ async function delete_pb(id) {
     })
     loadPBs()
 }
-
-loadGoals()
-loadCalendar()
-loadPBs()
