@@ -628,6 +628,10 @@ async function loadPBs() {
     }
 }
 
+function isValidTime(t) {
+    return /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(t);
+}
+
 async function addPB() {
     const distance = parseFloat(document.getElementById("pb-distance").value)
     let time = document.getElementById("pb-time").value
@@ -637,9 +641,9 @@ async function addPB() {
         return
     }
 
-    // Force HH:MM:SS
-    if(time.length === 5){
-        time = time + ":00"
+    if (!isValidTime(time)) {
+        alert("Time must be in hh:mm:ss format");
+        return;
     }
 
     await authFetch("/api/pbs", {
