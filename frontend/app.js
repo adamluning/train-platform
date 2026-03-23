@@ -14,6 +14,8 @@ const MONTH_NAMES = [
 ]
 
 let selectedYears = [
+    new Date().getFullYear() - 7,
+    new Date().getFullYear() - 6,
     new Date().getFullYear() - 5,
     new Date().getFullYear() - 4,
     new Date().getFullYear() - 3,
@@ -493,7 +495,7 @@ async function statsYear() {
 
     ctx.clearRect(0, 0, rect.width, rect.height)
 
-    const colors = ["#22c55e","#60a5fa","#f59e0b","#ef4444","#a78bfa"]
+    const colors = ["#eb41ac","#a78bfa","#f59e0b","#60a5fa","#d6e723","#ef4444","#22c55e","#2f0a9d"]
 
     let allData = []
 
@@ -594,8 +596,8 @@ async function statsYear() {
         // legend
         ctx.fillText(
             y.year,
-            width - 120,
-            20 + selectedYears.indexOf(y.year)*18
+            width - selectedYears.length*30 + selectedYears.indexOf(y.year)*30,
+            20
         )
     })
 
