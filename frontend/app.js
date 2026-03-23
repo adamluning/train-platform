@@ -48,14 +48,22 @@ function bootApp(){
 }
 
 async function authFetch(url, options = {}) {
-    if(!AUTH_TOKEN){
-        throw new Error("Not authenticated")
+    if (!AUTH_TOKEN) {
+        forceLogout()
+        return
     }
 
     options.headers = options.headers || {}
     options.headers["Authorization"] = `Bearer ${AUTH_TOKEN}`
 
-    return fetch(url, options)
+    const res = await fetch(url, options)
+
+    if (res.status === 401) {
+        forceLogout()
+        return
+    }
+
+    return res
 }
 
 window.onload = () => {
@@ -95,6 +103,16 @@ function logout(){
     AUTH_TOKEN = null
     localStorage.removeItem("auth_token")
     location.reload()
+}
+
+function forceLogout(){
+    AUTH_TOKEN = null
+    localStorage.removeItem("auth_token")
+
+    // Hide app, show login
+    document.getElementById("app-root").style.display = "none"
+    document.getElementById("register-panel").style.display = "none"
+    document.getElementById("auth-panel").style.display = "block"
 }
 
 async function register() {
@@ -137,6 +155,7 @@ async function loadCalendar() {
     console.log("loadCalendar() called")
 
     const res = await authFetch(`/api/calendar?year=${currentYear}&month=${currentMonth}`)
+    if (!res) return
     calendarData = await res.json()
 
     document.getElementById("month-label").innerText =
@@ -320,6 +339,7 @@ async function loadGoals() {
     const year = now.getFullYear()
 
     const res = await authFetch(`/api/goals?year=${year}`)
+    if (!res) return
     const goals = await res.json()
 
     const container = document.getElementById("goals-list")
@@ -377,8 +397,8 @@ async function loadStats(){
 
 async function statsMonth() {
     const res = await authFetch(`/api/stats/month?year=${currentYear}&month=${currentMonth}`)
+    if (!res) return
     const data = await res.json()
-    console.log("stats data:", data)
 
     const canvas = document.getElementById("statsChart")
     const ctx = canvas.getContext("2d")
@@ -446,6 +466,7 @@ async function statsYear() {
     for(let i=0;i<selectedYears.length;i++){
         const year = selectedYears[i]
         const res = await authFetch(`/api/stats/year?year=${year}`)
+        if (!res) return
         const data = await res.json()
         allData.push({year,data,color:colors[i%colors.length]})
     }
@@ -589,6 +610,7 @@ async function loadPBs() {
     console.log("loadPBs() called")
 
     const res = await authFetch(`/api/pbs`)
+    if (!res) return
     const pbs = await res.json()
 
     const container = document.getElementById("pb-list")
