@@ -90,6 +90,13 @@
 
         <div class="panel" id="yearly-panel">
             <h3>Yearly Volume</h3>
+            <div id="yearly-toggle" style="margin-bottom:10px; display:flex; align-items:center; gap:10px;">
+                <label class="switch">
+                    <input type="checkbox" id="toggle-volume-type">
+                    <span class="slider round"></span>
+                </label>
+                <span id="toggle-label">Show by Distance</span>
+            </div>
             <canvas id="yearlyChart"></canvas>
 
             <div class="panel" id="manual-volume">

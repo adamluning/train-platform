@@ -42,6 +42,8 @@ function nextMonth() {
     loadCalendar()
 }
 
+document.getElementById("toggle-volume-type").addEventListener("change", statsYear)
+
 function bootApp(){
     document.getElementById("auth-panel").style.display = "none"
     document.getElementById("register-panel").style.display = "none"
@@ -492,41 +494,57 @@ async function statsYear() {
     canvas.style.height = rect.height + "px"
 
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0)
-
     ctx.clearRect(0, 0, rect.width, rect.height)
+
+    // ✅ TOGGLE STATE
+    const toggle = document.getElementById("toggle-volume-type")
+    const metric = toggle && toggle.checked ? "duration" : "distance"
+
+    const labelEl = document.getElementById("toggle-label")
+    if (labelEl) {
+        labelEl.textContent =
+            metric === "distance" ? "Show by Distance" : "Show by Duration"
+    }
 
     const colors = ["#eb41ac","#a78bfa","#f59e0b","#60a5fa","#d6e723","#ef4444","#22c55e","#2f0a9d"]
 
     let allData = []
 
-    for(let i=0;i<selectedYears.length;i++){
+    for (let i = 0; i < selectedYears.length; i++) {
         const year = selectedYears[i]
         const res = await authFetch(`/api/stats/year?year=${year}`)
         if (!res) return
         const data = await res.json()
 
-        hasData = false
-        for (let m=0;m<12;m++){
-            if (data[m].distance_km > 0 ){
-                hasData = true
-            }
+        let hasData = false
+        for (let m = 0; m < 12; m++) {
+            const val = metric === "distance"
+                ? data[m].distance_km
+                : data[m].duration_min
+
+            if (val > 0) hasData = true
         }
 
-        if (hasData) allData.push({year,data,color:colors[i%colors.length]})
+        if (hasData) {
+            allData.push({ year, data, color: colors[i % colors.length] })
+        }
     }
 
-    // chart dimensions
     const width = rect.width
     const height = rect.height
 
     const padding = 50
     const baseY = height - padding
-    const chartHeight = height - padding*2
-    const chartWidth = width - padding*2
+    const chartHeight = height - padding * 2
+    const chartWidth = width - padding * 2
 
-    // scale
+    // ✅ dynamic max value
     const maxVal = Math.max(
-        ...allData.flatMap(y => y.data.map(m => m.distance_km)),
+        ...allData.flatMap(y =>
+            y.data.map(m =>
+                metric === "distance" ? m.distance_km : m.duration_min
+            )
+        ),
         1
     )
 
@@ -534,11 +552,11 @@ async function statsYear() {
     const stepX = chartWidth / 11
 
     // axes
-    ctx.strokeStyle="#94a3b8"
+    ctx.strokeStyle = "#94a3b8"
     ctx.beginPath()
     ctx.moveTo(padding, padding)
     ctx.lineTo(padding, baseY)
-    ctx.lineTo(width-padding, baseY)
+    ctx.lineTo(width - padding, baseY)
     ctx.stroke()
 
     // y-axis ticks
@@ -546,71 +564,85 @@ async function statsYear() {
     ctx.font = "12px Inter"
 
     const steps = 5
-    for(let i=0;i<=steps;i++){
-        const val = (maxVal/steps)*i
-        const y = baseY - val*scaleY
+    for (let i = 0; i <= steps; i++) {
+        const val = (maxVal / steps) * i
+        const y = baseY - val * scaleY
 
-        ctx.fillText(val.toFixed(0), 30, y+4)
+        ctx.fillText(val.toFixed(0), 30, y + 4)
 
         ctx.strokeStyle = "#334155"
         ctx.beginPath()
         ctx.moveTo(padding, y)
-        ctx.lineTo(width-padding, y)
+        ctx.lineTo(width - padding, y)
         ctx.stroke()
     }
 
     // month labels
-    ctx.fillStyle="#e5e7eb"
-    for(let m=0;m<12;m++){
-        const x = padding + m*stepX
-        ctx.fillText(MONTH_NAMES[m].substring(0,3), x-8, baseY + 20)
+    ctx.fillStyle = "#e5e7eb"
+    for (let m = 0; m < 12; m++) {
+        const x = padding + m * stepX
+        ctx.fillText(MONTH_NAMES[m].substring(0, 3), x - 8, baseY + 20)
     }
 
     // draw lines
-    allData.forEach(y=>{
+    allData.forEach(y => {
         ctx.strokeStyle = y.color
         ctx.fillStyle = y.color
         ctx.lineWidth = 2
         ctx.beginPath()
 
-        y.data.forEach((m,i)=>{
-            const x = padding + i*stepX
-            const yPos = baseY - m.distance_km*scaleY
+        y.data.forEach((m, i) => {
+            const value = metric === "distance"
+                ? m.distance_km
+                : m.duration_min
 
-            if(i===0) ctx.moveTo(x,yPos)
-            else ctx.lineTo(x,yPos)
+            const x = padding + i * stepX
+            const yPos = baseY - value * scaleY
+
+            if (i === 0) ctx.moveTo(x, yPos)
+            else ctx.lineTo(x, yPos)
         })
 
         ctx.stroke()
 
         // markers
-        y.data.forEach((m,i)=>{
-            const x = padding + i*stepX
-            const yPos = baseY - m.distance_km*scaleY
+        y.data.forEach((m, i) => {
+            const value = metric === "distance"
+                ? m.distance_km
+                : m.duration_min
+
+            const x = padding + i * stepX
+            const yPos = baseY - value * scaleY
 
             ctx.beginPath()
-            ctx.arc(x,yPos,4,0,Math.PI*2)
+            ctx.arc(x, yPos, 4, 0, Math.PI * 2)
             ctx.fill()
         })
 
         // legend
         ctx.fillText(
             y.year,
-            width - selectedYears.length*30 + selectedYears.indexOf(y.year)*30,
+            width - selectedYears.length * 30 + selectedYears.indexOf(y.year) * 30,
             20
         )
     })
 
     // axis labels
-    ctx.fillStyle="#e5e7eb"
-    ctx.font="14px Inter"
-    ctx.fillText("Month", width/2 - 30, height - 10)
+    ctx.fillStyle = "#e5e7eb"
+    ctx.font = "14px Inter"
+    ctx.fillText("Month", width / 2 - 30, height - 10)
 
     ctx.save()
-    ctx.translate(15, height/2)
-    ctx.rotate(-Math.PI/2)
+    ctx.translate(15, height / 2)
+    ctx.rotate(-Math.PI / 2)
     ctx.textAlign = "center"
-    ctx.fillText("Distance (km)", 0, 0)
+
+    ctx.fillText(
+        metric === "distance" ? "Distance (km)" : "Duration (min)",
+        0,
+        0
+    )
+
     ctx.restore()
 
     ctx.textAlign = "left"
