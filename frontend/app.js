@@ -176,18 +176,47 @@ async function renderCalendar(year, month) {
     const firstDay = new Date(year, month-1, 1)
     const daysInMonth = new Date(year, month, 0).getDate()
 
-    for(let i=1; i <= daysInMonth; i++) {
-        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(i).padStart(2, '0')}`
+    let startDay = firstDay.getDay()
+    startDay = (startDay === 0) ? 6 : startDay - 1;
+
+    for (let i = 0; i < startDay; i++) {
+        const empty = document.createElement("div");
+        grid.appendChild(empty);
+    }
+
+    const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+    for(let day=1; day <= daysInMonth; day++) {
+        const date = new Date(year, month-1, day)
+        let weekday = date.getDay()
+        weekday = (weekday === 0) ? 6 : weekday - 1
+
+        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
         const cell = document.createElement("div")
         cell.className = "day"
-        cell.onclick = () => selectDay(dateStr)
+        if (dateStr == selectedDate) {
+            cell.className = "day-s"
+        } else {
+            cell.className = "day"
+        }
+        cell.onclick = () => {
+            cell.className = "day-s"
+            selectDay(dateStr)
+        }
 
-        cell.innerHTML = `<div class="day-number">${i}</div>`
+        cell.innerHTML = `
+            <div class="day-number">${day}</div>
+            <div class="day-name">${dayNames[weekday]}</div>
+        `;
 
         if(calendarData[dateStr]) {
-            calendarData[dateStr].forEach(_=>{
+            calendarData[dateStr].forEach(s=>{
                 const dot = document.createElement("div")
+                if (s.completed) {
+                    dot.className = "session-dot-c"
+                } else {
                 dot.className = "session-dot"
+                }
                 cell.appendChild(dot)
             })
         }
@@ -198,6 +227,7 @@ async function renderCalendar(year, month) {
 
 async function selectDay(dateStr) {
     selectedDate = dateStr
+    renderCalendar(currentYear, currentMonth)
 
     document.getElementById("selected-day").innerText = dateStr
     const container = document.getElementById("day-sessions")
