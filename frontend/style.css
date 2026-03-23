@@ -169,6 +169,17 @@ button:hover{transform:translateY(-1px);filter:brightness(1.05);}
   transition:.2s;
 }
 
+.day-s{
+  background:var(--card);
+  border:1px solid var(--accent-soft);
+  border-radius:10px;
+  min-height:90px;
+  padding:6px;
+  cursor:pointer;
+  position:relative;
+  transition:.2s;
+}
+
 .day:hover{transform:translateY(-2px);border-color:var(--accent-soft);}
 
 .day-number{
@@ -176,10 +187,23 @@ button:hover{transform:translateY(-1px);filter:brightness(1.05);}
   color:var(--muted);
 }
 
-.session-dot{
+.day-name{
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.session-dot-c{
   width:8px;
   height:8px;
   background:var(--accent);
+  border-radius:50%;
+  margin-top:4px;
+}
+
+.session-dot{
+  width:8px;
+  height:8px;
+  background:var(--logout);
   border-radius:50%;
   margin-top:4px;
 }

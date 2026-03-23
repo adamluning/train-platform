@@ -14,8 +14,12 @@ const MONTH_NAMES = [
 ]
 
 let selectedYears = [
-    new Date().getFullYear(),
-    new Date().getFullYear() - 1
+    new Date().getFullYear() - 5,
+    new Date().getFullYear() - 4,
+    new Date().getFullYear() - 3,
+    new Date().getFullYear() - 2,
+    new Date().getFullYear() - 1,
+    new Date().getFullYear()
 ]
 
 function prevMonth() {
@@ -215,7 +219,7 @@ async function renderCalendar(year, month) {
                 if (s.completed) {
                     dot.className = "session-dot-c"
                 } else {
-                dot.className = "session-dot"
+                    dot.className = "session-dot"
                 }
                 cell.appendChild(dot)
             })
@@ -498,7 +502,15 @@ async function statsYear() {
         const res = await authFetch(`/api/stats/year?year=${year}`)
         if (!res) return
         const data = await res.json()
-        allData.push({year,data,color:colors[i%colors.length]})
+
+        hasData = false
+        for (let m=0;m<12;m++){
+            if (data[m].distance_km > 0 ){
+                hasData = true
+            }
+        }
+
+        if (hasData) allData.push({year,data,color:colors[i%colors.length]})
     }
 
     // chart dimensions
