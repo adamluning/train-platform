@@ -1,5 +1,7 @@
 # Training Platform
 
+https://altrack.se/
+
 A full-stack training tracker built with:
 
 - Go (Gin)
