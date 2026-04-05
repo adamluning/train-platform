@@ -49,6 +49,8 @@ function bootApp(){
     document.getElementById("register-panel").style.display = "none"
     document.getElementById("app-root").style.display = "block"
 
+    document.getElementById("session-date").value = ""
+
     loadCalendar()
     loadGoals()
     loadStats()
@@ -237,6 +239,8 @@ async function selectDay(dateStr) {
     selectedDate = dateStr
     renderCalendar(currentYear, currentMonth)
 
+    document.getElementById("session-date").value = selectedDate
+
     document.getElementById("selected-day").innerText = dateStr
     const container = document.getElementById("day-sessions")
     container.innerHTML = ""
@@ -287,8 +291,12 @@ async function addSession() {
     let date = document.getElementById("session-date").value
 
     if (!date) {
-        const now = new Date()
-        date = now.toISOString().split("T")[0]
+        if (selectedDate) {
+            date = selectedDate
+        } else {
+            const now = new Date()
+            date = now.toISOString().split("T")[0]
+        }
     }
 
     await authFetch("/api/sessions", {
@@ -305,7 +313,7 @@ async function addSession() {
 
     document.getElementById("session-title").value = ""
     document.getElementById("session-desc").value = ""
-    document.getElementById("session-date").value = new Date().getDate()    
+    document.getElementById("session-date").value = selectedDate || ""  
 
     loadCalendar()
 }
@@ -688,6 +696,8 @@ async function loadPBs() {
     const res = await authFetch(`/api/pbs`)
     if (!res) return
     const pbs = await res.json()
+
+    pbs.sort((a, b) => a.distance - b.distance)
 
     const container = document.getElementById("pb-list")
     container.innerHTML = ""

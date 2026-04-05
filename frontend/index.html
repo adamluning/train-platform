@@ -46,7 +46,7 @@
         <div class="panel" id="add-goal-panel">
             <h3>Add goal</h3>
             <input id="goal-title" placeholder="Title">
-            <input id="goal-target" placeholder="Target">
+            <input id="goal-target" placeholder="Target" style="width: 300px;">
             <input id="goal-date" type="date">
             <button onclick="addGoal()">Add</button>
         </div>
@@ -71,7 +71,7 @@
         <div class="panel" id="add-session-panel">
             <h3>Add session</h3>
             <input id="session-title" placeholder="Title">
-            <input id="session-desc" placeholder="Description">
+            <input id="session-desc" placeholder="Description" style="width: 400px;">
             <input id="session-date" type="date">
             <button onclick="addSession()">Add</button>
         </div>
@@ -101,7 +101,7 @@
 
             <div class="panel" id="manual-volume">
                 <h4>Add Monthly Volume</h4>
-                <h5>If you want to add volume as an entire block without creating sessions, you can do it here. This creates a synthetic session on the first day of the month.</h5>
+                <h5>Add volume as an entire block without creating sessions. This creates a synthetic session on the first day of the month.</h5>
 
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                     <input id="mv-year" type="number" min="1900" max="2100" placeholder="Year" style="width:90px;">
