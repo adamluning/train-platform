@@ -27,6 +27,8 @@ func AuthRequired() gin.HandlerFunc {
 		}
 
 		c.Set("user_id", claims.UserID)
+		c.Set("email", claims.Email)
+		c.Set("is_guest", claims.Email == "guest@guest.com")
 		c.Next()
 	}
 }

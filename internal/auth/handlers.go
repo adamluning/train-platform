@@ -51,7 +51,7 @@ func (h *Handler) Register(c *gin.Context) {
 		return
 	}
 
-	token, _ := GenerateToken(id)
+	token, _ := GenerateToken(id, req.Email)
 
 	c.JSON(200, gin.H{"token": token})
 }
@@ -80,7 +80,7 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	token, _ := GenerateToken(user.ID)
+	token, _ := GenerateToken(user.ID, req.Email)
 
 	c.JSON(200, gin.H{"token": token})
 }

@@ -2,6 +2,8 @@ console.log("APP LOADED")
 
 let AUTH_TOKEN = localStorage.getItem("auth_token") || null
 
+let isGuest = localStorage.getItem("isGuest") === "true"
+
 let currentYear = new Date().getFullYear()
 let currentMonth = new Date().getMonth() + 1
 
@@ -51,6 +53,7 @@ function bootApp(){
 
     document.getElementById("session-date").value = ""
 
+    updateTopbar()
     loadCalendar()
     loadGoals()
     loadStats()
@@ -88,6 +91,23 @@ window.addEventListener("resize", () => {
     loadStats()
 })
 
+function updateTopbar() {
+    const topBar = document.getElementById("topbar")
+
+    let guestLabel = isGuest 
+        ? `<span style="margin-right:10px;">Guest mode</span>` 
+        : ""
+
+    topBar.innerHTML = `
+        <div id="logo">ALtrack Training Platform</div>
+
+        <div id="topbar-actions">
+            ${guestLabel}
+            <button onclick="logout()">Logout</button>
+        </div>
+    `
+}
+
 async function login() {
     const email = document.getElementById("auth-email").value
     const password = document.getElementById("auth-password").value
@@ -109,9 +129,34 @@ async function login() {
     }
 }
 
+async function guestLogin() {
+    const email = "guest@guest.com"
+    const password = "guestadmin"
+
+    const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ email, password })
+    })
+
+    const data = await res.json()
+
+    if(data.token){
+        AUTH_TOKEN = data.token
+        localStorage.setItem("auth_token", AUTH_TOKEN)
+        localStorage.setItem("isGuest", "true")
+        isGuest = true
+        bootApp()
+    } else {
+        alert("Login failed")
+    }
+}
+
 function logout(){
     AUTH_TOKEN = null
     localStorage.removeItem("auth_token")
+    isGuest = false
+    localStorage.removeItem("isGuest")
     location.reload()
 }
 
@@ -286,6 +331,14 @@ function renderSessionCard(s){
 }
 
 async function addSession() {
+    if (isGuest) {
+        alert("Guest mode: cannot add sessions")
+        document.getElementById("session-title").value = ""
+        document.getElementById("session-desc").value = ""
+        document.getElementById("session-date").value = selectedDate || "" 
+        return
+    }
+
     const title = document.getElementById("session-title").value
     const desc = document.getElementById("session-desc").value
     let date = document.getElementById("session-date").value
@@ -319,6 +372,11 @@ async function addSession() {
 }
 
 async function complete_s(id) {
+    if (isGuest) {
+        alert("Guest mode: cannot complete sessions")
+        return
+    }
+
     const card = document.getElementById(`session-${id}`)
     if(!card) return
     if(card.querySelector(".volume-box")) return
@@ -336,6 +394,11 @@ async function complete_s(id) {
 }
 
 async function submitVolume(id) {
+    if (isGuest) {
+        alert("Guest mode: cannot add sessions")
+        return
+    }
+
     const distance = parseFloat(document.getElementById(`dist-${id}`).value || 0)
     const duration = parseInt(document.getElementById(`dur-${id}`).value || 0)
 
@@ -354,6 +417,12 @@ async function submitVolume(id) {
 }
 
 async function addNote(id) {
+    if (isGuest) {
+        alert("Guest mode: cannot add notes")
+        document.getElementById(`note-${id}`).value = ""
+        return
+    }
+
     const note = document.getElementById(`note-${id}`).value
 
     await authFetch(`/api/sessions/${id}/note`, {
@@ -371,6 +440,11 @@ async function addNote(id) {
 }
 
 async function delete_s(id) {
+    if (isGuest) {
+        alert("Guest mode: cannot delete sessions")
+        return
+    }
+
     await authFetch(`/api/sessions/${id}/delete`, {
         method: "DELETE"
     })
@@ -403,6 +477,14 @@ async function loadGoals() {
 }
 
 async function addGoal() {
+    if (isGuest) {
+        alert("Guest mode: cannot add goals")
+        document.getElementById("goal-title").value = ""
+        document.getElementById("goal-target").value = ""
+        document.getElementById("goal-date").value = ""
+        return
+    }
+
     const title = document.getElementById("goal-title").value
     const target = document.getElementById("goal-target").value
     let date = document.getElementById("goal-date").value
@@ -424,12 +506,17 @@ async function addGoal() {
 
     document.getElementById("goal-title").value = ""
     document.getElementById("goal-target").value = ""
-    document.getElementById("goal-date").value = new Date().getDate()
+    document.getElementById("goal-date").value = ""
 
     loadGoals()
 }
 
 async function delete_g(id) {
+    if (isGuest) {
+        alert("Guest mode: cannot delete goals")
+        return
+    }
+
     await authFetch(`/api/goals/${id}/delete`, {
         method: "DELETE"
     })
@@ -504,7 +591,6 @@ async function statsYear() {
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0)
     ctx.clearRect(0, 0, rect.width, rect.height)
 
-    // ✅ TOGGLE STATE
     const toggle = document.getElementById("toggle-volume-type")
     const metric = toggle && toggle.checked ? "duration" : "distance"
 
@@ -546,7 +632,6 @@ async function statsYear() {
     const chartHeight = height - padding * 2
     const chartWidth = width - padding * 2
 
-    // ✅ dynamic max value
     const maxVal = Math.max(
         ...allData.flatMap(y =>
             y.data.map(m =>
@@ -657,6 +742,15 @@ async function statsYear() {
 }
 
 async function addMonthlyVolume() {
+    if (isGuest) {
+        alert("Guest mode: cannot add sessions")
+        document.getElementById("mv-year").value = ""
+        document.getElementById("mv-month").value = ""
+        document.getElementById("mv-distance").value = ""
+        document.getElementById("mv-duration").value = ""
+        return
+    }
+
     const year = parseInt(document.getElementById("mv-year").value)
     const month = parseInt(document.getElementById("mv-month").value)
     const distance = parseFloat(document.getElementById("mv-distance").value)
@@ -697,11 +791,10 @@ async function loadPBs() {
     if (!res) return
     const pbs = await res.json()
 
-    pbs.sort((a, b) => a.distance - b.distance)
-
     const container = document.getElementById("pb-list")
     container.innerHTML = ""
     if (pbs) {
+        pbs.sort((a, b) => a.distance - b.distance)
         pbs.forEach(pb => {
             const div = document.createElement("div")
             div.className = "pb-card"
@@ -719,6 +812,13 @@ function isValidTime(t) {
 }
 
 async function addPB() {
+    if (isGuest) {
+        alert("Guest mode: cannot add PB")
+        document.getElementById("pb-distance").value = ""
+        document.getElementById("pb-time").value = ""
+        return
+    }
+
     const distance = parseFloat(document.getElementById("pb-distance").value)
     let time = document.getElementById("pb-time").value
 
@@ -748,6 +848,11 @@ async function addPB() {
 }
 
 async function delete_pb(id) {
+    if (isGuest) {
+        alert("Guest mode: cannot delete PB")
+        return
+    }
+
     await authFetch(`/api/pbs/${id}/delete`, {
         method: "DELETE"
     })

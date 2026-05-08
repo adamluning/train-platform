@@ -23,6 +23,11 @@ func GetCalendarHandler(c *gin.Context) {
 }
 
 func CreateSessionHandler(c *gin.Context) {
+	if c.GetBool("is_guest") {
+		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
+		return
+	}
+	
 	userID := c.GetInt("user_id")
 
 	var s Session
@@ -62,6 +67,11 @@ func GetSessionsHandler(c *gin.Context) {
 }
 
 func CompleteSessionHandler(c *gin.Context) {
+	if c.GetBool("is_guest") {
+		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
+		return
+	}
+	
 	userID := c.GetInt("user_id")
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -85,6 +95,11 @@ func CompleteSessionHandler(c *gin.Context) {
 }
 
 func CreateSessionNoteHandler(c *gin.Context) {
+	if c.GetBool("is_guest") {
+		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
+		return
+	}
+	
 	userID := c.GetInt("user_id")
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -101,6 +116,11 @@ func CreateSessionNoteHandler(c *gin.Context) {
 }
 
 func DeleteSessionHandler(c * gin.Context) {
+	if c.GetBool("is_guest") {
+		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
+		return
+	}
+	
 	userID := c.GetInt("user_id")
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -113,6 +133,11 @@ func DeleteSessionHandler(c * gin.Context) {
 }
 
 func CreateGoalHandler(c *gin.Context) {
+	if c.GetBool("is_guest") {
+		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
+		return
+	}
+	
 	userID := c.GetInt("user_id")
 
 	var g Goal
@@ -151,6 +176,11 @@ func GetGoalsHandler(c *gin.Context) {
 }
 
 func DeleteGoalHandler(c * gin.Context) {
+	if c.GetBool("is_guest") {
+		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
+		return
+	}
+	
 	userID := c.GetInt("user_id")
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -195,6 +225,11 @@ func GetYearlyStatsHandler(c *gin.Context) {
 }
 
 func AddOldStatsHandler(c *gin.Context) {
+	if c.GetBool("is_guest") {
+		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
+		return
+	}
+	
 	userID := c.GetInt("user_id")
 
 	var mv MonthlyVolume
@@ -226,6 +261,11 @@ func AddOldStatsHandler(c *gin.Context) {
 }
 
 func CreatePBHandler(c *gin.Context) {
+	if c.GetBool("is_guest") {
+		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
+		return
+	}
+	
 	userID := c.GetInt("user_id")
 
 	var pb PB
@@ -262,6 +302,11 @@ func GetPBsHandler(c *gin.Context) {
 }
 
 func DeletePBHandler(c * gin.Context) {
+	if c.GetBool("is_guest") {
+		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
+		return
+	}
+
 	userID := c.GetInt("user_id")
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
