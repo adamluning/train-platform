@@ -108,24 +108,65 @@ function updateTopbar() {
     `
 }
 
+function setError(elementId, message) {
+    const errorEl = document.getElementById(elementId)
+    if (!errorEl) return
+
+    if (message) {
+        errorEl.innerText = message
+        errorEl.style.display = "block"
+    } else {
+        errorEl.innerText = ""
+        errorEl.style.display = "none"
+    }
+}
+
+function setAuthError(message) {
+    setError("auth-error", message)
+}
+
+function setRegisterError(message) {
+    setError("register-error", message)
+}
+
+function togglePassword(show, inputId) {
+    const input = document.getElementById(inputId)
+    if (!input) return
+    input.type = show ? "text" : "password"
+}
+
 async function login() {
-    const email = document.getElementById("auth-email").value
+    const email = document.getElementById("auth-email").value.trim()
     const password = document.getElementById("auth-password").value
 
-    const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ email, password })
-    })
+    if (!email) {
+        setAuthError("Email cannot be empty")
+        return
+    }
+    if (!password) {
+        setAuthError("Password cannot be empty")
+        return
+    }
 
-    const data = await res.json()
+    try {
+        const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({ email, password })
+        })
 
-    if(data.token){
-        AUTH_TOKEN = data.token
-        localStorage.setItem("auth_token", AUTH_TOKEN)
-        bootApp()
-    } else {
-        alert("Login failed")
+        const data = await res.json()
+
+        if (data.token) {
+            AUTH_TOKEN = data.token
+            localStorage.setItem("auth_token", AUTH_TOKEN)
+            setAuthError("")
+            bootApp()
+        } else {
+            setAuthError(data.error || `Login failed (${res.status})`)
+        }
+    } catch (err) {
+        setAuthError("Login failed: unable to reach server.")
     }
 }
 
@@ -133,22 +174,27 @@ async function guestLogin() {
     const email = "guest@guest.com"
     const password = "guestadmin"
 
-    const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ email, password })
-    })
+    try {
+        const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({ email, password })
+        })
 
-    const data = await res.json()
+        const data = await res.json()
 
-    if(data.token){
-        AUTH_TOKEN = data.token
-        localStorage.setItem("auth_token", AUTH_TOKEN)
-        localStorage.setItem("isGuest", "true")
-        isGuest = true
-        bootApp()
-    } else {
-        alert("Login failed")
+        if (data.token) {
+            AUTH_TOKEN = data.token
+            localStorage.setItem("auth_token", AUTH_TOKEN)
+            localStorage.setItem("isGuest", "true")
+            isGuest = true
+            setAuthError("")
+            bootApp()
+        } else {
+            setAuthError(data.error || `Login failed (${res.status})`)
+        }
+    } catch (err) {
+        setAuthError("Guest login failed: unable to reach server.")
     }
 }
 
@@ -168,42 +214,60 @@ function forceLogout(){
     document.getElementById("app-root").style.display = "none"
     document.getElementById("register-panel").style.display = "none"
     document.getElementById("auth-panel").style.display = "block"
+    setAuthError("")
 }
 
 async function register() {
-    const email = document.getElementById("reg-email").value
+    const email = document.getElementById("reg-email").value.trim()
     const password = document.getElementById("reg-password").value
 
+    if (!email) {
+        setRegisterError("Email cannot be empty")
+        return
+    }
+    if (!password) {
+        setRegisterError("Password cannot be empty")
+        return
+    }
     if(!email.includes("@")){
-        alert("Enter a valid email")
+        setRegisterError("Enter a valid email")
         return
     }
 
-    const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ email, password })
-    })
+    try {
+        const res = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({ email, password })
+        })
 
-    const data = await res.json()
+        const data = await res.json()
 
-    if(data.token){
-        AUTH_TOKEN = data.token
-        localStorage.setItem("auth_token", AUTH_TOKEN)
-        bootApp()
-    } else {
-        alert("Registration failed")
+        if(data.token){
+            AUTH_TOKEN = data.token
+            localStorage.setItem("auth_token", AUTH_TOKEN)
+            setRegisterError("")
+            bootApp()
+        } else {
+            setRegisterError(data.error || `Registration failed (${res.status})`)
+        }
+    } catch (err) {
+        setRegisterError("Registration failed: unable to reach server.")
     }
 }
 
 function showRegister(){
     document.getElementById("auth-panel").style.display = "none"
     document.getElementById("register-panel").style.display = "block"
+    setAuthError("")
+    setRegisterError("")
 }
 
 function showLogin(){
     document.getElementById("register-panel").style.display = "none"
     document.getElementById("auth-panel").style.display = "block"
+    setAuthError("")
+    setRegisterError("")
 }
 
 async function loadCalendar() {

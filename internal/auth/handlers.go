@@ -69,6 +69,11 @@ func (h *Handler) Login(c *gin.Context) {
 
 	req.Email = strings.ToLower(req.Email)
 
+	if !emailRegex.MatchString(req.Email) {
+		c.JSON(400, gin.H{"error": "invalid email format"})
+		return
+	}
+
 	user, err := h.Repo.GetUserByEmail(req.Email)
 	if err != nil {
 		c.JSON(401, gin.H{"error": "invalid credentials"})
@@ -76,7 +81,7 @@ func (h *Handler) Login(c *gin.Context) {
 	}
 
 	if !CheckPassword(req.Password, user.PasswordHash) {
-		c.JSON(401, gin.H{"error": "invalid credentials"})
+		c.JSON(401, gin.H{"error": "incorrect password"})
 		return
 	}
 

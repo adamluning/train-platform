@@ -130,6 +130,16 @@ h2,h3{margin:0 0 10px 0;}
     cursor: pointer;
 }
 
+.auth-error {
+    color: #ffdddd;
+    background: #6c1f24;
+    border: 1px solid #a6393f;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 4px;
+    font-size: 0.95rem;
+}
+
 input, button{
   background:var(--bg2);
   color:var(--text);
@@ -150,6 +160,38 @@ button{
 }
 
 button:hover{transform:translateY(-1px);filter:brightness(1.05);}
+
+/* ===== Password Toggle ===== */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    flex: 1;
+    padding-right: 50px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 8px !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--muted) !important;
+    font-size: 1rem;
+    cursor: pointer !important;
+    padding: 6px;
+    border-radius: 0 !important;
+}
+
+.password-toggle:active {
+    transform: scale(0.9) !important;
+}
+
+.password-toggle:hover {
+    filter: none !important;
+}
 
 /* ===== Calendar ===== */
 #calendar-grid{

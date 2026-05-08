@@ -13,8 +13,19 @@
 <div id="auth-panel">
     <h2>Login</h2>
     <input id="auth-email" placeholder="Email">
-    <input id="auth-password" type="password" placeholder="Password">
+    <div class="password-wrapper">
+        <input id="auth-password" type="password" placeholder="Password">
+        <button type="button" class="password-toggle"
+            onmousedown="togglePassword(true, 'auth-password')"
+            onmouseup="togglePassword(false, 'auth-password')"
+            onmouseleave="togglePassword(false, 'auth-password')"
+            ontouchstart="togglePassword(true, 'auth-password')"
+            ontouchend="togglePassword(false, 'auth-password')">
+            👁
+        </button>
+    </div>
     <button onclick="login()">Login</button>
+    <div id="auth-error" class="auth-error" style="display:none;"></div>
 
     <p>or</p>
 
@@ -26,8 +37,19 @@
 <div id="register-panel" style="display:none;">
     <h2>Register</h2>
     <input id="reg-email" placeholder="Email">
-    <input id="reg-password" type="password" placeholder="Password">
+    <div class="password-wrapper">
+        <input id="reg-password" type="password" placeholder="Password">
+        <button type="button" class="password-toggle"
+            onmousedown="togglePassword(true, 'reg-password')"
+            onmouseup="togglePassword(false, 'reg-password')"
+            onmouseleave="togglePassword(false, 'reg-password')"
+            ontouchstart="togglePassword(true, 'reg-password')"
+            ontouchend="togglePassword(false, 'reg-password')">
+            👁
+        </button>
+    </div>
     <button onclick="register()">Register</button>
+    <div id="register-error" class="auth-error" style="display:none;"></div>
     <button onclick="showLogin()">Back</button>
 </div>
 
