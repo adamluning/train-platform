@@ -150,6 +150,12 @@ input, button{
 
 input::placeholder{color:var(--muted);}
 
+/* ===== Note Input Fields ===== */
+input[id^="note-"] {
+  width: 300px;
+  min-width: 200px;
+}
+
 button{
   cursor:pointer;
   background:linear-gradient(135deg,var(--accent),var(--accent-soft));

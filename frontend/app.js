@@ -386,9 +386,11 @@ function renderSessionCard(s){
 
         <div class="session-actions">
             ${!s.completed ? `<button onclick="complete_s(${s.id})">Complete</button>` : ""}
-            <input id="note-${s.id}" placeholder="Add note">
-            <button onclick="addNote(${s.id})">Save note</button>
-            <button onclick="delete_s(${s.id})">Delete</button>
+            ${s.notes ? 
+                `<button onclick="editNote(${s.id})">Edit note</button>` :
+                `<input id="note-${s.id}" placeholder="Add note"><button onclick="addNote(${s.id})">Save note</button>`
+            }
+            <button onclick="delete_s(${s.id})">Delete session</button>
         </div>
     </div>
     `
@@ -501,6 +503,35 @@ async function addNote(id) {
 
     await loadCalendar()
     if (selectedDate) selectDay(selectedDate)
+}
+
+function editNote(id) {
+    // Find the session card
+    const card = document.getElementById(`session-${id}`)
+    if (!card) return
+
+    // Get the current note text from the displayed notes
+    const notesDiv = card.querySelector('.session-notes')
+    const currentNote = notesDiv ? notesDiv.textContent.replace('📝 ', '') : ''
+
+    // Replace the "Edit note" button with input field and "Save note" button
+    const actionsDiv = card.querySelector('.session-actions')
+    const editButton = actionsDiv.querySelector('button[onclick*="editNote"]')
+    
+    // Create input field with current note
+    const input = document.createElement('input')
+    input.id = `note-${id}`
+    input.placeholder = "Add note"
+    input.value = currentNote
+
+    // Create save button
+    const saveButton = document.createElement('button')
+    saveButton.onclick = () => addNote(id)
+    saveButton.textContent = "Save note"
+
+    // Replace edit button with input and save button
+    editButton.parentNode.replaceChild(saveButton, editButton)
+    actionsDiv.insertBefore(input, saveButton)
 }
 
 async function delete_s(id) {
