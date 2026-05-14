@@ -330,13 +330,19 @@ async function renderCalendar(year, month) {
 
         if(calendarData[dateStr]) {
             calendarData[dateStr].forEach(s=>{
+                const row = document.createElement("div")
+                row.className = "session-dot-row"
+
                 const dot = document.createElement("div")
-                if (s.completed) {
-                    dot.className = "session-dot-c"
-                } else {
-                    dot.className = "session-dot"
-                }
-                cell.appendChild(dot)
+                dot.className = s.completed ? "session-dot-c" : "session-dot"
+                row.appendChild(dot)
+
+                const title = document.createElement("span")
+                title.className = "session-dot-title"
+                title.innerText = s.title
+                row.appendChild(title)
+
+                cell.appendChild(row)
             })
         }
 
@@ -368,6 +374,14 @@ async function selectDay(dateStr) {
 }
 
 function renderSessionCard(s){
+    const leftActions = []
+    if (!s.completed) {
+        leftActions.push(`<button onclick="complete_s(${s.id})">Complete</button>`)
+    }
+    if (!s.notes) {
+        leftActions.push(`<input id="note-${s.id}" placeholder="Add note"><button onclick="addNote(${s.id})">Save note</button>`)
+    }
+
     return `
     <div class="session-card">
         <div class="session-header">
@@ -385,12 +399,11 @@ function renderSessionCard(s){
         ${s.notes ? `<div class="session-notes">📝 ${s.notes}</div>` : ""}
 
         <div class="session-actions">
-            ${!s.completed ? `<button onclick="complete_s(${s.id})">Complete</button>` : ""}
-            ${s.notes ? 
-                `<button onclick="editNote(${s.id})">Edit note</button>` :
-                `<input id="note-${s.id}" placeholder="Add note"><button onclick="addNote(${s.id})">Save note</button>`
-            }
-            <button onclick="delete_s(${s.id})">Delete session</button>
+            ${leftActions.length ? `<div class="session-left-actions">${leftActions.join('')}</div>` : ""}
+            <div class="session-right-actions">
+                <button class="edit-session-button" onclick="editSession(${s.id})">Edit session</button>
+                <button class="delete-session-button" onclick="delete_s(${s.id})">Delete session</button>
+            </div>
         </div>
     </div>
     `
@@ -505,33 +518,113 @@ async function addNote(id) {
     if (selectedDate) selectDay(selectedDate)
 }
 
-function editNote(id) {
-    // Find the session card
+function editSession(id) {
+    if (isGuest) {
+        alert("Guest mode: cannot edit sessions")
+        return
+    }
+
     const card = document.getElementById(`session-${id}`)
     if (!card) return
 
-    // Get the current note text from the displayed notes
-    const notesDiv = card.querySelector('.session-notes')
-    const currentNote = notesDiv ? notesDiv.textContent.replace('📝 ', '') : ''
+    const sessions = selectedDate ? calendarData[selectedDate] || [] : []
+    const session = sessions.find(s => s.id === id)
+    if (!session) return
 
-    // Replace the "Edit note" button with input field and "Save note" button
-    const actionsDiv = card.querySelector('.session-actions')
-    const editButton = actionsDiv.querySelector('button[onclick*="editNote"]')
-    
-    // Create input field with current note
-    const input = document.createElement('input')
-    input.id = `note-${id}`
-    input.placeholder = "Add note"
-    input.value = currentNote
+    card.innerHTML = ""
 
-    // Create save button
+    const form = document.createElement('div')
+    form.className = 'session-edit-form'
+
+    const titleField = document.createElement('div')
+    titleField.className = 'session-edit-field'
+    titleField.innerHTML = `<label>Title</label><input id="edit-title-${id}" value="${htmlEscape(session.title)}">`
+    form.appendChild(titleField)
+
+    const descField = document.createElement('div')
+    descField.className = 'session-edit-field'
+    descField.innerHTML = `<label>Description</label><input id="edit-desc-${id}" value="${htmlEscape(session.description)}">`
+    form.appendChild(descField)
+
+    if (session.completed) {
+        const distField = document.createElement('div')
+        distField.className = 'session-edit-field'
+        distField.innerHTML = `<label>Distance (km)</label><input id="edit-dist-${id}" type="number" step="0.1" value="${session.distance_km.toFixed(1)}">`
+        form.appendChild(distField)
+
+        const durField = document.createElement('div')
+        durField.className = 'session-edit-field'
+        durField.innerHTML = `<label>Duration (min)</label><input id="edit-dur-${id}" type="number" value="${session.duration_min}">`
+        form.appendChild(durField)
+    }
+
+    const noteField = document.createElement('div')
+    noteField.className = 'session-edit-field'
+    noteField.innerHTML = `<label>Notes</label><textarea id="edit-note-${id}">${htmlEscape(session.notes || '')}</textarea>`
+    form.appendChild(noteField)
+
+    const actions = document.createElement('div')
+    actions.className = 'session-edit-actions'
+
     const saveButton = document.createElement('button')
-    saveButton.onclick = () => addNote(id)
-    saveButton.textContent = "Save note"
+    saveButton.textContent = 'Save'
+    saveButton.onclick = () => saveSessionEdit(id)
+    actions.appendChild(saveButton)
 
-    // Replace edit button with input and save button
-    editButton.parentNode.replaceChild(saveButton, editButton)
-    actionsDiv.insertBefore(input, saveButton)
+    const cancelButton = document.createElement('button')
+    cancelButton.textContent = 'Cancel'
+    cancelButton.onclick = () => cancelEditSession(id)
+    actions.appendChild(cancelButton)
+
+    form.appendChild(actions)
+    card.appendChild(form)
+}
+
+function cancelEditSession(id) {
+    const card = document.getElementById(`session-${id}`)
+    if (!card || !selectedDate) return
+
+    const session = calendarData[selectedDate].find(s => s.id === id)
+    if (!session) return
+
+    card.innerHTML = renderSessionCard(session)
+}
+
+async function saveSessionEdit(id) {
+    if (isGuest) {
+        alert("Guest mode: cannot edit sessions")
+        return
+    }
+
+    const title = document.getElementById(`edit-title-${id}`)?.value || ''
+    const description = document.getElementById(`edit-desc-${id}`)?.value || ''
+    const note = document.getElementById(`edit-note-${id}`)?.value || ''
+    const distance = parseFloat(document.getElementById(`edit-dist-${id}`)?.value || 0)
+    const duration = parseInt(document.getElementById(`edit-dur-${id}`)?.value || 0)
+
+    await authFetch(`/api/sessions/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            title,
+            description,
+            note,
+            distance_km: distance,
+            duration_min: duration
+        })
+    })
+
+    await loadCalendar()
+    if (selectedDate) selectDay(selectedDate)
+}
+
+function htmlEscape(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
 }
 
 async function delete_s(id) {

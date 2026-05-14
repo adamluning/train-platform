@@ -37,6 +37,7 @@ func New() *gin.Engine {
 
 	protected.POST("/sessions", training.CreateSessionHandler)
 	protected.GET("/sessions", training.GetSessionsHandler)
+	protected.PUT("/sessions/:id", training.UpdateSessionHandler)
 	protected.PUT("/sessions/:id/complete", training.CompleteSessionHandler)
 	protected.PUT("/sessions/:id/note", training.CreateSessionNoteHandler)
 	protected.DELETE("/sessions/:id/delete", training.DeleteSessionHandler)

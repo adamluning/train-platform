@@ -27,7 +27,7 @@ func CreateSessionHandler(c *gin.Context) {
 		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
 		return
 	}
-	
+
 	userID := c.GetInt("user_id")
 
 	var s Session
@@ -71,7 +71,7 @@ func CompleteSessionHandler(c *gin.Context) {
 		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
 		return
 	}
-	
+
 	userID := c.GetInt("user_id")
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -94,12 +94,42 @@ func CompleteSessionHandler(c *gin.Context) {
 	c.JSON(200, gin.H{"status": "completed"})
 }
 
+func UpdateSessionHandler(c *gin.Context) {
+	if c.GetBool("is_guest") {
+		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
+		return
+	}
+
+	userID := c.GetInt("user_id")
+
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+	var body struct {
+		Title       string  `json:"title"`
+		Description string  `json:"description"`
+		Note        string  `json:"note"`
+		DistanceKm  float64 `json:"distance_km"`
+		DurationMin int     `json:"duration_min"`
+	}
+
+	if err := c.BindJSON(&body); err != nil {
+		c.JSON(400, gin.H{"error": "invalid body"})
+		return
+	}
+
+	err := UpdateSession(userID, id, body.Title, body.Description, body.Note, body.DistanceKm, body.DurationMin)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"status": "updated"})
+}
+
 func CreateSessionNoteHandler(c *gin.Context) {
 	if c.GetBool("is_guest") {
 		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
 		return
 	}
-	
+
 	userID := c.GetInt("user_id")
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -115,12 +145,12 @@ func CreateSessionNoteHandler(c *gin.Context) {
 	c.JSON(200, gin.H{"status": "noted"})
 }
 
-func DeleteSessionHandler(c * gin.Context) {
+func DeleteSessionHandler(c *gin.Context) {
 	if c.GetBool("is_guest") {
 		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
 		return
 	}
-	
+
 	userID := c.GetInt("user_id")
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -137,7 +167,7 @@ func CreateGoalHandler(c *gin.Context) {
 		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
 		return
 	}
-	
+
 	userID := c.GetInt("user_id")
 
 	var g Goal
@@ -175,12 +205,12 @@ func GetGoalsHandler(c *gin.Context) {
 	c.JSON(200, goals)
 }
 
-func DeleteGoalHandler(c * gin.Context) {
+func DeleteGoalHandler(c *gin.Context) {
 	if c.GetBool("is_guest") {
 		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
 		return
 	}
-	
+
 	userID := c.GetInt("user_id")
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -195,8 +225,8 @@ func DeleteGoalHandler(c * gin.Context) {
 func GetMonthlyStatsHandler(c *gin.Context) {
 	userID := c.GetInt("user_id")
 
-	year,_ := strconv.Atoi(c.Query("year"))
-	month,_ := strconv.Atoi(c.Query("month"))
+	year, _ := strconv.Atoi(c.Query("year"))
+	month, _ := strconv.Atoi(c.Query("month"))
 
 	monthlyDistance, monthlyDuration, err := GetMonthlyStats(userID, year, month)
 	if err != nil {
@@ -213,7 +243,7 @@ func GetMonthlyStatsHandler(c *gin.Context) {
 func GetYearlyStatsHandler(c *gin.Context) {
 	userID := c.GetInt("user_id")
 
-	year,_ := strconv.Atoi(c.Query("year"))
+	year, _ := strconv.Atoi(c.Query("year"))
 
 	data, err := GetYearlyStats(userID, year)
 	if err != nil {
@@ -229,7 +259,7 @@ func AddOldStatsHandler(c *gin.Context) {
 		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
 		return
 	}
-	
+
 	userID := c.GetInt("user_id")
 
 	var mv MonthlyVolume
@@ -240,7 +270,7 @@ func AddOldStatsHandler(c *gin.Context) {
 
 	// parse date
 	date := ""
-	if (mv.Month < 10) {
+	if mv.Month < 10 {
 		date = fmt.Sprintf("%d-0%d-01", mv.Year, mv.Month)
 	} else {
 		date = fmt.Sprintf("%d-%d-01", mv.Year, mv.Month)
@@ -265,7 +295,7 @@ func CreatePBHandler(c *gin.Context) {
 		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
 		return
 	}
-	
+
 	userID := c.GetInt("user_id")
 
 	var pb PB
@@ -301,7 +331,7 @@ func GetPBsHandler(c *gin.Context) {
 	c.JSON(200, pbs)
 }
 
-func DeletePBHandler(c * gin.Context) {
+func DeletePBHandler(c *gin.Context) {
 	if c.GetBool("is_guest") {
 		c.JSON(403, gin.H{"error": "guest users cannot modify data"})
 		return

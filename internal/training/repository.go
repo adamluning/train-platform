@@ -112,6 +112,18 @@ func CompleteSession(userID int, id int64, distance_km float64, duration_min int
 	return err
 }
 
+func UpdateSession(userID int, id int64, title, desc, notes string, distance_km float64, duration_min int) error {
+	query := `UPDATE sessions
+			  SET title=$1,
+				  description=$2,
+				  notes=$3,
+				  distance_km=$4,
+				  duration_min=$5
+			  WHERE user_id=$6 AND id=$7`
+	_, err := db.DB.Exec(query, title, desc, notes, distance_km, duration_min, userID, id)
+	return err
+}
+
 func CreateSessionNote(userID int, id int64, note string) error {
 	query := `UPDATE sessions SET notes=$1 WHERE user_id=$2 AND id=$3`
 	_, err := db.DB.Exec(query, note, userID, id)

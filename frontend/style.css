@@ -245,7 +245,6 @@ button:hover{transform:translateY(-1px);filter:brightness(1.05);}
   height:8px;
   background:var(--accent);
   border-radius:50%;
-  margin-top:4px;
 }
 
 .session-dot{
@@ -253,9 +252,24 @@ button:hover{transform:translateY(-1px);filter:brightness(1.05);}
   height:8px;
   background:var(--logout);
   border-radius:50%;
-  margin-top:4px;
 }
 
+.session-dot-row{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text);
+  overflow: hidden;
+}
+
+.session-dot-title{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}
 
 /* ===== Sessions ===== */
 .session-card{
@@ -295,10 +309,69 @@ button:hover{transform:translateY(-1px);filter:brightness(1.05);}
 
 .session-actions{
   display:flex;
+  justify-content:flex-start;
   gap:8px;
   margin-top:10px;
   flex-wrap:wrap;
+  align-items:flex-start;
+}
+
+.session-left-actions,
+.session-right-actions{
+  display:flex;
   align-items:center;
+  gap:8px;
+}
+
+.session-left-actions{
+  min-width:0;
+}
+
+.session-left-actions:empty{
+  display:none;
+}
+
+.session-left-actions input{
+  width: 340px;
+  min-width: 120px;
+}
+
+.session-right-actions{
+  margin-left:auto;
+}
+
+.session-edit-form{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:10px;
+}
+
+.session-edit-field{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.session-edit-field input,
+.session-edit-field textarea{
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--text);
+}
+
+.session-edit-field textarea{
+  min-height: 70px;
+  resize: vertical;
+}
+
+.session-edit-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
 }
 
 /* ===== Goals ===== */
