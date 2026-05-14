@@ -661,7 +661,7 @@ async function statsYear() {
     const labelEl = document.getElementById("toggle-label")
     if (labelEl) {
         labelEl.textContent =
-            metric === "distance" ? "Show by Distance" : "Show by Duration"
+            metric === "distance" ? "Show by Duration" : "Show by Distance"
     }
 
     const colors = ["#eb41ac","#a78bfa","#f59e0b","#60a5fa","#d6e723","#ef4444","#22c55e","#2f0a9d"]
@@ -687,6 +687,36 @@ async function statsYear() {
             allData.push({ year, data, color: colors[i % colors.length] })
         }
     }
+
+    // Update yearly totals table
+    const metricHeader = document.getElementById("yearly-metric-header")
+    const tableBody = document.getElementById("yearly-totals-body")
+
+    if (metricHeader) {
+        metricHeader.textContent = metric === "distance" 
+            ? "Total Distance (km)" 
+            : "Total Duration (min)"
+    }
+
+    tableBody.innerHTML = ""
+    allData.forEach(item => {
+        let total = 0
+        item.data.forEach(monthData => {
+            if (metric === "distance") {
+                total += monthData.distance_km
+            } else {
+                total += monthData.duration_min
+            }
+        })
+        
+        const row = document.createElement("tr")
+        const unit = metric === "distance" ? "km" : "min"
+        row.innerHTML = `
+            <td>${item.year}</td>
+            <td>${total.toFixed(metric === "distance" ? 1 : 0)} ${unit}</td>
+        `
+        tableBody.appendChild(row)
+    })
 
     const width = rect.width
     const height = rect.height

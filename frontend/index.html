@@ -108,7 +108,7 @@
         </div>
 
         <div class="panel" id="monthly-panel">
-            <h3>Monthly Volume</h3>
+            <h3>Volume this month</h3>
             <canvas id="statsChart" width="800" height="100"></canvas>
         </div>
 
@@ -119,9 +119,23 @@
                     <input type="checkbox" id="toggle-volume-type">
                     <span class="slider round"></span>
                 </label>
-                <span id="toggle-label">Show by Distance</span>
+                <span id="toggle-label">Show by Duration</span>
             </div>
+
             <canvas id="yearlyChart"></canvas>
+            
+            <div id="yearly-totals-table" style="margin-bottom:20px; overflow-x:auto;">
+                <table class="yearly-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th id="yearly-metric-header">Total Distance (km)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="yearly-totals-body">
+                    </tbody>
+                </table>
+            </div>
 
             <div class="panel" id="manual-volume">
                 <h4>Add Monthly Volume</h4>
