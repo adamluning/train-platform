@@ -11,46 +11,50 @@
 
 <!--Authentication-->
 <div id="auth-panel">
-    <h2>Login</h2>
-    <input id="auth-email" placeholder="Email">
-    <div class="password-wrapper">
-        <input id="auth-password" type="password" placeholder="Password">
-        <button type="button" class="password-toggle"
-            onmousedown="togglePassword(true, 'auth-password')"
-            onmouseup="togglePassword(false, 'auth-password')"
-            onmouseleave="togglePassword(false, 'auth-password')"
-            ontouchstart="togglePassword(true, 'auth-password')"
-            ontouchend="togglePassword(false, 'auth-password')">
-            👁
-        </button>
-    </div>
-    <button onclick="login()">Login</button>
-    <div id="auth-error" class="auth-error" style="display:none;"></div>
+    <form onsubmit="login(); return false;">
+        <h2>Login</h2>
+        <input id="auth-email" placeholder="Email">
+        <div class="password-wrapper">
+            <input id="auth-password" type="password" placeholder="Password">
+            <button type="button" class="password-toggle"
+                onmousedown="togglePassword(true, 'auth-password')"
+                onmouseup="togglePassword(false, 'auth-password')"
+                onmouseleave="togglePassword(false, 'auth-password')"
+                ontouchstart="togglePassword(true, 'auth-password')"
+                ontouchend="togglePassword(false, 'auth-password')">
+                👁
+            </button>
+        </div>
+        <button type="submit">Login</button>
+        <div id="auth-error" class="auth-error" style="display:none;"></div>
 
-    <p>or</p>
+        <p>or</p>
 
-    <button onclick="showRegister()">Create account</button>
-    <p></p>
-    <button onclick="guestLogin()">Login as Guest</button>
+        <button type="button" onclick="showRegister()">Create account</button>
+        <p></p>
+        <button type="button" onclick="guestLogin()">Login as Guest</button>
+    </form>
 </div>
 
 <div id="register-panel" style="display:none;">
-    <h2>Register</h2>
-    <input id="reg-email" placeholder="Email">
-    <div class="password-wrapper">
-        <input id="reg-password" type="password" placeholder="Password">
-        <button type="button" class="password-toggle"
-            onmousedown="togglePassword(true, 'reg-password')"
-            onmouseup="togglePassword(false, 'reg-password')"
-            onmouseleave="togglePassword(false, 'reg-password')"
-            ontouchstart="togglePassword(true, 'reg-password')"
-            ontouchend="togglePassword(false, 'reg-password')">
-            👁
-        </button>
-    </div>
-    <button onclick="register()">Register</button>
-    <div id="register-error" class="auth-error" style="display:none;"></div>
-    <button onclick="showLogin()">Back</button>
+    <form onsubmit="register(); return false;">
+        <h2>Register</h2>
+        <input id="reg-email" placeholder="Email">
+        <div class="password-wrapper">
+            <input id="reg-password" type="password" placeholder="Password">
+            <button type="button" class="password-toggle"
+                onmousedown="togglePassword(true, 'reg-password')"
+                onmouseup="togglePassword(false, 'reg-password')"
+                onmouseleave="togglePassword(false, 'reg-password')"
+                ontouchstart="togglePassword(true, 'reg-password')"
+                ontouchend="togglePassword(false, 'reg-password')">
+                👁
+            </button>
+        </div>
+        <button type="submit">Register</button>
+        <div id="register-error" class="auth-error" style="display:none;"></div>
+        <button type="button" onclick="showLogin()">Back</button>
+    </form>
 </div>
 
 
@@ -69,10 +73,12 @@
         <div id="goals-list"></div>
         <div class="panel" id="add-goal-panel">
             <h3>Add goal</h3>
-            <input id="goal-title" placeholder="Title">
-            <input id="goal-target" placeholder="Target" style="width: 300px;">
-            <input id="goal-date" type="date">
-            <button onclick="addGoal()">Add</button>
+            <form onsubmit="addGoal(); return false;" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+                <input id="goal-title" placeholder="Title">
+                <input id="goal-target" placeholder="Target" style="width: 300px;">
+                <input id="goal-date" type="date">
+                <button type="submit">Add</button>
+            </form>
         </div>
     </div>
 
@@ -94,10 +100,12 @@
         
         <div class="panel" id="add-session-panel">
             <h3>Add session</h3>
-            <input id="session-title" placeholder="Title">
-            <input id="session-desc" placeholder="Description" style="width: 400px;">
-            <input id="session-date" type="date">
-            <button onclick="addSession()">Add</button>
+            <form onsubmit="addSession(); return false;" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+                <input id="session-title" placeholder="Title">
+                <input id="session-desc" placeholder="Description" style="width: 400px;">
+                <input id="session-date" type="date">
+                <button type="submit">Add</button>
+            </form>
         </div>
     </div>
 
@@ -141,13 +149,13 @@
                 <h4>Add Monthly Volume</h4>
                 <h5>Add volume as an entire block without creating sessions. This creates a synthetic session on the first day of the month.</h5>
 
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <form onsubmit="addMonthlyVolume(); return false;" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
                     <input id="mv-year" type="number" min="1900" max="2100" placeholder="Year" style="width:90px;">
                     <input id="mv-month" type="number" min="1" max="12" placeholder="Month" style="width:90px;">
                     <input id="mv-distance" type="number" min="0" step="0.1" placeholder="Distance km">
                     <input id="mv-duration" type="number" min="0" placeholder="Duration min">
-                    <button onclick="addMonthlyVolume()">Add</button>
-                </div>
+                    <button type="submit">Add</button>
+                </form>
             </div>
         </div>
     </div>
@@ -155,11 +163,11 @@
     <div class="panel" id="pb-panel">
         <h2>Personal Bests</h2>
 
-        <div id="pb-form">
+        <form id="pb-form" onsubmit="addPB(); return false;" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
             <input id="pb-distance" type="number" min="0" step="0.1" placeholder="Distance (km)">
             <input id="pb-time" type="text" placeholder="hh:mm:ss">
-            <button onclick="addPB()">Add PB</button>
-        </div>
+            <button type="submit">Add PB</button>
+        </form>
 
         <div id="pb-list"></div>
     </div>
